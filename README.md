@@ -281,86 +281,91 @@ http://localhost:4000
 
 And your Docker image is published at:  
 `https://hub.docker.com/r/mariamwafik333/todo-app`
-## 🚀 Part 2: VM Provisioning and Docker Setup Using Ansible
-
-This part covers setting up an EC2 instance on AWS and provisioning it using Ansible to install Docker.
+## ✅ Part 2: Provisioning a VM and Installing Docker using Ansible
 
 ---
 
-### ✅ Step 1: Create a Linux VM on AWS (EC2)
+### ✅ Step 1: Create an EC2 Linux VM on AWS
 
 #### 🎯 Goal:
 
-Create an Ubuntu server on AWS and access it via SSH.
+Create an Ubuntu server on AWS EC2 and connect to it via SSH.
 
-#### 🔷 Launch EC2 Instance
+#### 🔷 Step-by-step Instructions:
 
-1. Go to: [https://aws.amazon.com](https://aws.amazon.com)
-2. Click **Sign In** and login to your AWS account.
-3. In the AWS Management Console, search for `EC2` in the top search bar.
-4. Click **EC2 - Virtual Servers in the Cloud**.
-5. Click **Launch Instance** and fill in the following:
+1. **Login to AWS Management Console**
+   Go to [https://aws.amazon.com](https://aws.amazon.com), click **Sign In**, and enter your AWS credentials.
 
-| Field                          | Value                  |
-| ------------------------------ | ---------------------- |
-| Name                           | `devops-vm`            |
-| Application and OS Image (AMI) | `Ubuntu 22.04 LTS`     |
-| Instance type                  | `t2.micro` (Free tier) |
-| Key pair                       | Create new key pair    |
-| Key name                       | `devops-key`           |
-| Type                           | RSA                    |
-| Format                         | `.pem`                 |
+2. **Open EC2 Service**
+   Use the top search bar to find `EC2`. Click the result: **EC2 - Virtual Servers in the Cloud**.
 
-6. Click **Create key pair** → the file `devops-key.pem` will be downloaded. Save it in a known directory.
-7. Under **Network settings**, click **Edit** → set **Allow SSH traffic from** to `Anywhere (0.0.0.0/0)`.
-8. Click **Launch Instance**.
+3. **Launch a new Instance**
 
-#### 🔷 Get the Public IP
+| Setting       | Value                       |
+| ------------- | --------------------------- |
+| Name          | `devops-vm`                 |
+| AMI           | `Ubuntu 22.04 LTS`          |
+| Instance type | `t2.micro` (Free tier)      |
+| Key pair      | Click `Create new key pair` |
+| Key name      | `devops-key`                |
+| Type          | `RSA`                       |
+| Format        | `.pem`                      |
 
-* From the left sidebar, click **Instances**.
-* Locate `devops-vm` and copy the **Public IPv4 address** (e.g., `3.123.45.67`).
+Click **Create key pair** → A file named `devops-key.pem` will download → Save it securely.
+
+4. **Configure Network Settings**
+   Click **Edit** in "Network settings" section:
+
+* Set **Allow SSH traffic from:** `Anywhere (0.0.0.0/0)`
+
+Click **Launch Instance**.
+
+5. **Get the Public IP Address**
+   Navigate to **Instances** in the left panel.
+
+* Locate your instance `devops-vm`
+* Copy the value under **Public IPv4 address** (e.g., `3.123.45.67`)
 
 ---
 
-### ✅ Step 2: Connect to EC2 using SSH
+### ✅ Step 2: SSH into EC2 from Your Local Machine
 
 #### 🎯 Goal:
 
-Connect to the server remotely using the `.pem` key.
+Remotely connect to the EC2 instance using your `.pem` key.
 
-#### 🔷 Open Git Bash
+1. **Open Git Bash**
+   If not installed, download from: [https://git-scm.com/downloads](https://git-scm.com/downloads)
 
-If not installed, download it from:
-[https://git-scm.com/downloads](https://git-scm.com/downloads)
-
-Navigate to the folder containing `devops-key.pem`:
+2. **Navigate to the Key File Location**
 
 ```
 cd ~/Downloads
-# Or specify the correct path:
-cd D:/Keys
+# Or wherever your devops-key.pem is stored
 ```
 
-#### 🔷 Set Key Permissions
+3. **Change Key File Permissions**
 
 ```
 chmod 400 devops-key.pem
 ```
 
-#### 🔷 Connect to EC2 Instance
+4. **SSH into EC2**
 
 ```
 ssh -i devops-key.pem ubuntu@3.123.45.67
-# Replace with your actual IP address
+# Replace the IP with your EC2's public IP
 ```
 
-✅ If you're connected with no errors, you're inside the server! 💪
+If successful, you're inside the server 🎉
 
 ---
 
 ### ✅ Step 3: Install Ansible on Your Local Machine
 
-If you’re using WSL (Ubuntu on Windows):
+> If you're using WSL (Ubuntu on Windows):
+
+Open Ubuntu terminal and run:
 
 ```
 sudo apt update
@@ -369,42 +374,37 @@ sudo apt install ansible -y
 
 ---
 
-### ✅ Step 4: Create Ansible Files
+### ✅ Step 4: Create Ansible Inventory and Playbook
 
-#### 📁 Create Working Directory
+1. **Create Project Folder**
 
 ```
 mkdir aws-ansible
 cd aws-ansible
 ```
 
-#### 📄 Create Inventory File
+2. **Create Inventory File**
 
 ```
 nano inventory.ini
 ```
 
-Add the following:
+Paste the following (replace the IP with your EC2 IP):
 
 ```
 [ec2]
 3.123.45.67 ansible_user=ubuntu ansible_ssh_private_key_file=~/Downloads/devops-key.pem ansible_python_interpreter=/usr/bin/python3
 ```
 
-Replace with your actual IP.
+Save with: `Ctrl + O` → Enter → `Ctrl + X`
 
-To save and exit:
-
-* Press `Ctrl + O`, then `Enter`
-* Press `Ctrl + X`
-
-#### 📄 Create Playbook to Install Docker
+3. **Create Ansible Playbook File**
 
 ```
 nano install-docker.yml
 ```
 
-Paste the following YAML code:
+Paste the following YAML:
 
 ```
 ---
@@ -449,45 +449,39 @@ Paste the following YAML code:
         state: started
 ```
 
-To save and exit:
-
-* Press `Ctrl + O`, then `Enter`
-* Press `Ctrl + X`
+Save with: `Ctrl + O` → Enter → `Ctrl + X`
 
 ---
 
 ### ✅ Step 5: Run Ansible Playbook
 
-Run the following command in the same directory:
+From the `aws-ansible` directory:
 
 ```
 ansible-playbook -i inventory.ini install-docker.yml
 ```
 
-Watch the logs. If you see `ok` or `changed` on all tasks, everything is set up correctly. 👌
+You should see progress logs. If all tasks show `ok` or `changed`, you're good!
 
 ---
 
-### ✅ Step 6: Verify Docker Installation on EC2
+### ✅ Verify Docker Installation
 
-SSH again into the EC2 instance:
+SSH into your EC2 again:
 
 ```
 ssh -i ~/Downloads/devops-key.pem ubuntu@3.123.45.67
 ```
 
-Then run:
+Run:
 
 ```
 docker --version
 ```
 
-If you see something like:
+Expected output:
 
 ```
 Docker version 24.0.x, build xxxxx
 ```
-
-You're done! 🎉
-
 

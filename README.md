@@ -281,4 +281,213 @@ http://localhost:4000
 
 And your Docker image is published at:  
 `https://hub.docker.com/r/mariamwafik333/todo-app`
+## 🚀 Part 2: VM Provisioning and Docker Setup Using Ansible
+
+This part covers setting up an EC2 instance on AWS and provisioning it using Ansible to install Docker.
+
+---
+
+### ✅ Step 1: Create a Linux VM on AWS (EC2)
+
+#### 🎯 Goal:
+
+Create an Ubuntu server on AWS and access it via SSH.
+
+#### 🔷 Launch EC2 Instance
+
+1. Go to: [https://aws.amazon.com](https://aws.amazon.com)
+2. Click **Sign In** and login to your AWS account.
+3. In the AWS Management Console, search for `EC2` in the top search bar.
+4. Click **EC2 - Virtual Servers in the Cloud**.
+5. Click **Launch Instance** and fill in the following:
+
+| Field                          | Value                  |
+| ------------------------------ | ---------------------- |
+| Name                           | `devops-vm`            |
+| Application and OS Image (AMI) | `Ubuntu 22.04 LTS`     |
+| Instance type                  | `t2.micro` (Free tier) |
+| Key pair                       | Create new key pair    |
+| Key name                       | `devops-key`           |
+| Type                           | RSA                    |
+| Format                         | `.pem`                 |
+
+6. Click **Create key pair** → the file `devops-key.pem` will be downloaded. Save it in a known directory.
+7. Under **Network settings**, click **Edit** → set **Allow SSH traffic from** to `Anywhere (0.0.0.0/0)`.
+8. Click **Launch Instance**.
+
+#### 🔷 Get the Public IP
+
+* From the left sidebar, click **Instances**.
+* Locate `devops-vm` and copy the **Public IPv4 address** (e.g., `3.123.45.67`).
+
+---
+
+### ✅ Step 2: Connect to EC2 using SSH
+
+#### 🎯 Goal:
+
+Connect to the server remotely using the `.pem` key.
+
+#### 🔷 Open Git Bash
+
+If not installed, download it from:
+[https://git-scm.com/downloads](https://git-scm.com/downloads)
+
+Navigate to the folder containing `devops-key.pem`:
+
+```
+cd ~/Downloads
+# Or specify the correct path:
+cd D:/Keys
+```
+
+#### 🔷 Set Key Permissions
+
+```
+chmod 400 devops-key.pem
+```
+
+#### 🔷 Connect to EC2 Instance
+
+```
+ssh -i devops-key.pem ubuntu@3.123.45.67
+# Replace with your actual IP address
+```
+
+✅ If you're connected with no errors, you're inside the server! 💪
+
+---
+
+### ✅ Step 3: Install Ansible on Your Local Machine
+
+If you’re using WSL (Ubuntu on Windows):
+
+```
+sudo apt update
+sudo apt install ansible -y
+```
+
+---
+
+### ✅ Step 4: Create Ansible Files
+
+#### 📁 Create Working Directory
+
+```
+mkdir aws-ansible
+cd aws-ansible
+```
+
+#### 📄 Create Inventory File
+
+```
+nano inventory.ini
+```
+
+Add the following:
+
+```
+[ec2]
+3.123.45.67 ansible_user=ubuntu ansible_ssh_private_key_file=~/Downloads/devops-key.pem ansible_python_interpreter=/usr/bin/python3
+```
+
+Replace with your actual IP.
+
+To save and exit:
+
+* Press `Ctrl + O`, then `Enter`
+* Press `Ctrl + X`
+
+#### 📄 Create Playbook to Install Docker
+
+```
+nano install-docker.yml
+```
+
+Paste the following YAML code:
+
+```
+---
+- name: Install Docker on EC2 instance
+  hosts: ec2
+  become: true
+
+  tasks:
+    - name: Update apt
+      apt:
+        update_cache: yes
+
+    - name: Install dependencies
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+        state: present
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: latest
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+```
+
+To save and exit:
+
+* Press `Ctrl + O`, then `Enter`
+* Press `Ctrl + X`
+
+---
+
+### ✅ Step 5: Run Ansible Playbook
+
+Run the following command in the same directory:
+
+```
+ansible-playbook -i inventory.ini install-docker.yml
+```
+
+Watch the logs. If you see `ok` or `changed` on all tasks, everything is set up correctly. 👌
+
+---
+
+### ✅ Step 6: Verify Docker Installation on EC2
+
+SSH again into the EC2 instance:
+
+```
+ssh -i ~/Downloads/devops-key.pem ubuntu@3.123.45.67
+```
+
+Then run:
+
+```
+docker --version
+```
+
+If you see something like:
+
+```
+Docker version 24.0.x, build xxxxx
+```
+
+You're done! 🎉
+
 

@@ -72,7 +72,8 @@ Open PowerShell or Command Prompt and run:
 git clone https://github.com/Ankit6098/Todo-List-nodejs
 cd Todo-List-nodejs
 ```
-![Setup Screenshot](images/Screenshot 2025-07-26 142254.png)
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20142254.png)
+
 
 
 

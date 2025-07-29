@@ -73,6 +73,8 @@ git clone https://github.com/Ankit6098/Todo-List-nodejs
 cd Todo-List-nodejs
 ```
 ![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20142254.png)
+![Screenshot](images/Screenshot%202025-07-26%20162003.png)
+
 
 
 
@@ -111,6 +113,13 @@ Open your browser and navigate to:
 ```
 http://localhost:4000
 ```
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20142052.png)
+
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20142008.png)
+
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20142636.png)
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20152928.png)
+
 
 ---
 
@@ -159,6 +168,19 @@ Navigate to:
 http://localhost:4000
 ```
 
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20151457.png)
+
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20151355.png)
+![Screenshot](images/Screenshot%202025-07-26%20165846.png)
+
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20152956.png)
+
+
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20151516.png)
+
+
+
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20151336.png)
 ---
 
 ### 📤 Step 4: Push Docker Image to Docker Hub
@@ -189,6 +211,14 @@ docker push mariamwafik333/todo-app:latest
 You can now view your image on Docker Hub:  
 `https://hub.docker.com/r/mariamwafik333/todo-app`
 
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20153352.png)
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20153336.png)
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20153754.png)
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20153939.png)
+![Screenshot](https://raw.githubusercontent.com/MariamWafik349/devops-intern-assessment/main/images/Screenshot%202025-07-26%20153939.png)
+![Screenshot](images/Screenshot%202025-07-26%20181259.png)
+
+
 ---
 
 ### ⚙️ Step 5: GitHub Actions CI Pipeline
@@ -206,6 +236,15 @@ git commit -m "Initial commit with Dockerfile"
 git branch -M main
 git push -u origin main
 ```
+![Screenshot](images/Screenshot%202025-07-26%20162101.png)
+
+![Screenshot](images/Screenshot%202025-07-26%20221329.png)
+![Screenshot](images/Screenshot%202025-07-26%20221348.png)
+
+![Screenshot](images/Screenshot%202025-07-26%20180800.png)
+
+
+
 
 🔐 Add GitHub Secrets
 
@@ -267,6 +306,10 @@ git push origin main
 ```
 
 Check your GitHub Actions tab to see the build running.
+
+![Screenshot 2025-07-26 160800](images/Screenshot%202025-07-26%20160800.png)
+
+
 
 ---
 
@@ -364,6 +407,11 @@ ssh -i devops-key.pem ubuntu@3.123.45.67
 If successful, you're inside the server 🎉
 
 ---
+![Screenshot](images/Screenshot%202025-07-27%20173937.png)
+
+
+![Screenshot](images/Screenshot%202025-07-26%20225959.png)
+
 
 ### ✅ Step 3: Install Ansible on Your Local Machine
 
@@ -375,6 +423,10 @@ Open Ubuntu terminal and run:
 sudo apt update
 sudo apt install ansible -y
 ```
+![Screenshot](images/Screenshot%202025-07-26%20232301.png)
+
+![Screenshot](images/Screenshot%202025-07-26%20225331.png)
+
 
 ---
 
@@ -453,7 +505,8 @@ Paste the following YAML:
         state: started
 ```
 
-Save with: `Ctrl + O` → Enter → `Ctrl + X`
+![Screenshot](images/Screenshot%202025-07-27%20173420.png)
+
 
 ---
 
@@ -510,6 +563,7 @@ sudo apt install docker.io docker-compose -y
 sudo systemctl start docker
 sudo systemctl enable docker
 ```
+![Screenshot](images/Screenshot%202025-07-27%20175100.png)
 
 ---
 
@@ -565,6 +619,11 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --interval 30
 ```
+![Screenshot](images/Screenshot%202025-07-27%20193509.png)
+![Screenshot](images/Screenshot%202025-07-27%20193631.png)
+
+
+
 
 ## ✅ Step 4: Start the App Using Docker Compose
 
@@ -572,6 +631,9 @@ services:
 ```
 sudo docker-compose up -d
 ```
+![Screenshot](images/Screenshot%202025-07-27%20192435.png)
+![Screenshot](images/Screenshot%202025-07-27%20192503.png)
+![Screenshot](images/Screenshot%202025-07-27%20193056.png)
 
 ---
 
@@ -616,6 +678,11 @@ docker.io/mariamwafik333/todo-app:latest
 ```
 
 If found, it pulls and redeploys the updated image automatically.
+
+
+![Screenshot](images/Screenshot%202025-07-27%20193108.png)
+![Screenshot](images/Screenshot%202025-07-27%20193436.png)
+![Screenshot](images/Screenshot%202025-07-27%20193446.png)
 
 ---
 
@@ -747,6 +814,7 @@ spec:
 minikube start
 minikube dashboard &
 ```
+![Screenshot](images/Screenshot%202025-07-27%20225205.png)
 
 ---
 

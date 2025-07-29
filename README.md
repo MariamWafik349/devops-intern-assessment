@@ -624,5 +624,257 @@ If found, it pulls and redeploys the updated image automatically.
 ```
 
 ---
+# Part 4 – Deploying Todo App with Kubernetes and ArgoCD (Bonus)
+
+## ✅ Overview
+
+In this bonus part, I deployed the Node.js Todo App (`mariamwafik333/todo-app`) using Kubernetes (Minikube) and managed the deployment with ArgoCD for Continuous Delivery (CD). The application connects to MongoDB Atlas and is exposed via a NodePort service. ArgoCD monitors the GitHub repository and automatically syncs Kubernetes manifests stored under the `todo-k8s` directory.
+
+---
+
+## 📁 Project Structure
+
+```
+~/todo-k8s/
+├── deployment.yaml
+├── service.yaml
+├── namespace.yaml
+└── argocd-app.yaml
+```
+
+---
+
+## 🧩 Kubernetes Manifest Files
+
+### 1. `namespace.yaml`
+
+```
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: default
+```
+
+---
+
+### 2. `deployment.yaml`
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+  labels:
+    app: todo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo
+  template:
+    metadata:
+      labels:
+        app: todo
+    spec:
+      containers:
+      - name: todo-app
+        image: mariamwafik333/todo-app:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: MONGO_URI
+          value: "<your-mongodb-atlas-uri>"
+        - name: DB_NAME
+          value: "<your-db-name>"
+```
+
+---
+
+### 3. `service.yaml`
+
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-service
+spec:
+  selector:
+    app: todo
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+      nodePort: 31741
+```
+
+---
+
+### 4. `argocd-app.yaml`
+
+```
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: todo-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/MariamWafik349/todo-list-nodejs.git'
+    targetRevision: HEAD
+    path: todo-k8s
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
+```
+
+---
+
+## 🚀 Deployment Steps
+
+### ✅ 1. Start Minikube and Enable Dashboard
+
+```
+minikube start
+minikube dashboard &
+```
+
+---
+
+### ✅ 2. Install ArgoCD
+
+```
+kubectl create namespace argocd
+
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+---
+
+### ✅ 3. Access ArgoCD UI
+
+Check the NodePort for argocd-server:
+
+```
+kubectl get svc -n argocd
+```
+
+```
+NAME            TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+argocd-server   NodePort   10.96.99.123    <none>        443:31443/TCP                1m
+```
+
+Visit ArgoCD UI in the browser:
+
+```
+https://192.168.49.2:31443
+```
+
+⚠️ Use `https://`, not `http://`.  
+Accept SSL warning → Click "Advanced" → "Proceed anyway"
+
+---
+
+### ✅ 4. Login to ArgoCD
+
+Get the default admin password:
+
+```
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.password}" | base64 -d && echo
+```
+
+Login:
+- **Username:** `admin`
+- **Password:** (use the above command)
+
+---
+
+### ✅ 5. Connect App via ArgoCD
+
+Apply the ArgoCD application:
+
+```
+kubectl apply -f argocd-app.yaml -n argocd
+```
+
+ArgoCD will auto-sync the manifests from:
+
+```
+https://github.com/MariamWafik349/todo-list-nodejs.git
+```
+
+under the folder:
+
+```
+todo-k8s
+```
+
+---
+
+### ✅ 6. Access the Todo App
+
+Get the NodePort for `todo-service`:
+
+```
+kubectl get svc todo-service
+```
+
+Example output:
+
+```
+NAME           TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+todo-service   NodePort   10.100.156.179   <none>        80:31741/TCP   100m
+```
+
+Get Minikube IP:
+
+```
+minikube ip
+```
+
+Example:
+
+```
+192.168.49.2
+```
+
+Open the app in browser:
+
+```
+http://192.168.49.2:31741
+```
+
+✅ You should now see the Todo List app!
+
+---
+
+## 🧪 Optional: Auto Open in PowerShell (Windows)
+
+If you'd like to open the app automatically from PowerShell:
+
+```
+Start-Process http://192.168.49.2:31741
+```
+
+Save as a file named `open-todo.ps1`:
+
+```
+Start-Process http://192.168.49.2:31741
+```
+
+Then run:
+
+```
+.\open-todo.ps1
+```
+
+---
+
+This opens the correct URL in your browser automatically.
 
 

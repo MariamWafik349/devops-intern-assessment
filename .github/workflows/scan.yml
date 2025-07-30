@@ -1,0 +1,19 @@
+name: Scan Docker Image with Trivy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  scan-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Scan Docker Image with Trivy
+        uses: aquasecurity/trivy-action@0.19.0
+        with:
+          image-ref: mariamwafik333/todo-app:latest
+          format: table
+          exit-code: 0
+          ignore-unfixed: true

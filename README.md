@@ -695,7 +695,267 @@ If found, it pulls and redeploys the updated image automatically.
 ```
 
 ---
-# Part 4 – Deploying Todo App with Kubernetes and ArgoCD (Bonus)
+# Part 4 a:
+# 🐳 Deploying a Fullstack ToDo App on Kubernetes using Minikube
+
+This project demonstrates how to deploy a simple Node.js ToDo application connected to a MongoDB database using Kubernetes on your **local machine** with **Minikube**.
+
+---
+
+## 📦 Overview of the App
+
+- **Frontend & Backend**: Node.js app (`mariamwafik333/todo-app`)
+- **Database**: MongoDB
+- **Deployment**: Using raw Kubernetes YAML files
+- **Cluster**: Local Minikube cluster
+
+---
+
+## 🚀 Step-by-Step Guide
+
+---
+
+### ✅ Step 1: Start Minikube on Your Machine
+
+Minikube lets you run a Kubernetes cluster locally for testing and development.
+
+```
+minikube start
+```
+![Screenshot](images/Screenshot%202025-07-28%20231242.png)
+
+Check that everything is running correctly:
+
+```
+minikube status
+```
+
+You should see:
+
+```
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+```
+
+---
+
+### ✅ Step 2: Create a Project Directory for Kubernetes Files
+
+Inside your terminal, run:
+
+```
+mkdir todo-k8s && cd todo-k8s
+```
+
+This will create a folder named `todo-k8s` where we’ll place all YAML files.
+
+---
+
+### ✅ Step 3: Define the Kubernetes Resources Using YAML Files
+
+---
+
+#### 🟡 mongo-deployment.yaml
+
+This file defines both the Deployment and Service for MongoDB.
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo
+        ports:
+        - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
+```
+
+![Screenshot](images/Screenshot%202025-07-27%20225519.png)
+![Screenshot](images/Screenshot%202025-07-27%20225556.png)
+
+
+
+---
+
+#### 🟡 todo-app-deployment.yaml
+
+This file defines the ToDo App Deployment and exposes it using a NodePort service so it’s accessible from your browser.
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+      - name: todo-app
+        image: mariamwafik333/todo-app
+        ports:
+        - containerPort: 4000
+        env:
+        - name: MONGO_URL
+          value: mongodb://mongo:27017/todos
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-service
+spec:
+  type: NodePort
+  selector:
+    app: todo-app
+  ports:
+    - port: 80
+      targetPort: 4000
+      nodePort: 31741
+```
+![Screenshot](images/Screenshot%202025-07-27%20225817.png)
+
+
+
+---
+
+### ✅ Step 4: Deploy Everything to Kubernetes
+
+Now we apply the YAML files to create the resources:
+
+```
+kubectl apply -f mongo-deployment.yaml
+kubectl apply -f todo-app-deployment.yaml
+```
+![Screenshot](images/Screenshot%202025-07-28%20231215.png)
+
+Check that both pods are running:
+
+```
+kubectl get pods
+```
+
+Expected output:
+
+```
+mongo-xxxxxxxxxx-xxxxx       1/1     Running   0   10s
+todo-app-xxxxxxxxxx-xxxxx    1/1     Running   0   10s
+```
+
+Check services:
+
+```
+kubectl get svc
+```
+
+Expected:
+
+```
+mongo         ClusterIP   ...   27017/TCP
+todo-service  NodePort    ...   80:31741/TCP
+```
+![Screenshot](images/Screenshot%202025-07-28%20231215.png)
+
+---
+
+### ✅ Step 5: Open the Application in Your Browser
+
+1. Get the Minikube IP address:
+
+```
+minikube ip
+```
+
+2. Combine it with the NodePort (`31741`) to access the app:
+
+```
+http://<minikube-ip>:31741
+```
+
+Example:
+
+```
+http://192.168.49.2:31741
+```
+
+✅ You should now see the ToDo App running!
+
+---
+
+### 🛠️ Debugging and Useful Commands
+
+If you run into any issues, try these:
+
+Check pods:
+
+```
+kubectl get pods
+```
+
+See logs from your app:
+
+```
+kubectl logs deploy/todo-app
+```
+
+You should see:
+
+```
+Yupp! Server is running on port 4000
+connected to database
+```
+
+Test the service internally:
+
+```
+minikube ssh
+curl http://localhost:31741
+```
+![Screenshot](images/Screenshot%202025-07-28%20232538.png)
+
+Or open the service directly with:
+
+```
+minikube service todo-service
+```
+![Screenshot](images/Screenshot%202025-07-28%20232957.png)
+
+![Screenshot](images/Screenshot%202025-07-28%20232939.png)
+
+
+---
+
+# part 4 b : Deploying Todo App with Kubernetes and ArgoCD (Bonus)
 
 ## ✅ Overview
 
@@ -814,7 +1074,7 @@ spec:
 minikube start
 minikube dashboard &
 ```
-![Screenshot](images/Screenshot%202025-07-27%20225205.png)
+![Screenshot](images/Screenshot%202025-07-28%20234308.png)
 
 ---
 
@@ -840,6 +1100,8 @@ kubectl get svc -n argocd
 NAME            TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
 argocd-server   NodePort   10.96.99.123    <none>        443:31443/TCP                1m
 ```
+![Screenshot](images/Screenshot%202025-07-28%20234423.png)
+
 
 Visit ArgoCD UI in the browser:
 
@@ -849,6 +1111,8 @@ https://192.168.49.2:31443
 
 ⚠️ Use `https://`, not `http://`.  
 Accept SSL warning → Click "Advanced" → "Proceed anyway"
+
+![Screenshot](images/Screenshot%202025-07-28%20235517.png)
 
 ---
 
@@ -863,6 +1127,10 @@ kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath="{.data.pas
 Login:
 - **Username:** `admin`
 - **Password:** (use the above command)
+
+![Screenshot](images/Screenshot%202025-07-28%20235517.png)
+
+![Screenshot](images/Screenshot%202025-07-29%20000153.png)
 
 ---
 
@@ -885,6 +1153,8 @@ under the folder:
 ```
 todo-k8s
 ```
+![Screenshot](images/Screenshot%202025-07-29%20004637.png)
+![Screenshot](images/Screenshot%202025-07-29%20004727.png)
 
 ---
 
@@ -922,6 +1192,7 @@ http://192.168.49.2:31741
 ```
 
 ✅ You should now see the Todo List app!
+
 
 ---
 

@@ -695,7 +695,8 @@ If found, it pulls and redeploys the updated image automatically.
 ```
 
 ---
-# Part 4 a:
+# Part 4 a: Local Kubernetes Deployment of a ToDo App Using Minikube
+
 # 🐳 Deploying a Fullstack ToDo App on Kubernetes using Minikube
 
 This project demonstrates how to deploy a simple Node.js ToDo application connected to a MongoDB database using Kubernetes on your **local machine** with **Minikube**.
@@ -1178,12 +1179,8 @@ Get Minikube IP:
 ```
 minikube ip
 ```
+![Screenshot](images/Screenshot%202025-07-29%20011013.png)
 
-Example:
-
-```
-192.168.49.2
-```
 
 Open the app in browser:
 
@@ -1192,32 +1189,11 @@ http://192.168.49.2:31741
 ```
 
 ✅ You should now see the Todo List app!
+![Screenshot](images/Screenshot%202025-07-29%20010737.png)
 
-
----
-
-## 🧪 Optional: Auto Open in PowerShell (Windows)
-
-If you'd like to open the app automatically from PowerShell:
-
-```
-Start-Process http://192.168.49.2:31741
-```
-
-Save as a file named `open-todo.ps1`:
-
-```
-Start-Process http://192.168.49.2:31741
-```
-
-Then run:
-
-```
-.\open-todo.ps1
-```
+![Screenshot](images/Screenshot%202025-07-29%20010717.png)
 
 ---
 
-This opens the correct URL in your browser automatically.
 
 

@@ -35,7 +35,7 @@ jobs:
 
       # 🔐 Scan the Docker image using Trivy
       - name: Scan Docker Image with Trivy
-        uses: aquasecurity/trivy-action@v0.19.0
+        uses: aquasecurity/trivy-action@v0.10.0
         with:
           image-ref: mariamwafik333/todo-app:latest
           format: table

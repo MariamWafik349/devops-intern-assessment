@@ -1,13 +1,6 @@
-name: Scan Docker Image with Trivy
-
-on:
-  push:
-    branches:
-      - main
-
-jobs:
-  scan-image:
+  scan:
     runs-on: ubuntu-latest
+    needs: build  # ⬅️ This ensures scan waits for build to finish
 
     steps:
       - name: Scan Docker Image with Trivy
@@ -16,4 +9,4 @@ jobs:
           image-ref: mariamwafik333/todo-app:latest
           format: table
           exit-code: 0
-          ignore-unfixed: true
+          ignore-unfixed:

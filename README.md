@@ -159,7 +159,7 @@ docker build -t todo-app .
 ▶️ Run the Docker Container
 
 ```
-docker run -p 4000:4000 --env-file .env todo-app
+docker run -p 3000:3000 --env-file .env todo-app
 ```
 
 Navigate to:

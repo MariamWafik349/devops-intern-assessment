@@ -662,30 +662,48 @@ nano docker-compose.yml
 
 Paste the following configuration:
 ```
-version: '3.8'
+version: "3.8"
 
 services:
-  todo-app:
-    image: mariamwafik333/todo-app:latest
-    container_name: todo-app
-    restart: always
-    env_file:
-      - .env
+  mongodb:
+    image: mongo
+    container_name: mongodb
     ports:
-      - "4000:4000"
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:4000"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  todo-app:
+    image: mariamwafik333/todo-app
+    container_name: todo-app
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URL=mongodb://mongodb:27017/test
+    depends_on:
+      - mongodb
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
-    restart: always
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
     command: --interval 30
+
+volumes:
+  mongo-data: {}
+
 ```
 ![Screenshot](images/Screenshot%202025-07-27%20193509.png)
 ![Screenshot](images/Screenshot%202025-07-27%20193631.png)

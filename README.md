@@ -230,7 +230,7 @@ You can now view your image on Docker Hub:
 
 ```
 git init
-git remote add origin https://github.com/MariamWafik349/todo-list-nodejs.git
+git remote add origin https://github.com/MariamWafik349/devops-intern-assessment.git
 git add .
 git commit -m "Initial commit with Dockerfile"
 git branch -M main

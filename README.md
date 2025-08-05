@@ -224,7 +224,7 @@ You can now view your image on Docker Hub:
 ### ⚙️ Step 5: GitHub Actions CI Pipeline
 
 📁 Create a GitHub repository:  
-`https://github.com/MariamWafik349/todo-list-nodejs.git`
+`https://github.com/MariamWafik349/devops-intern-assessment.git`
 
 ⬆️ Push your project to GitHub
 

@@ -99,7 +99,7 @@ docker run -d -p 27017:27017 --name mongo mongo:latest
 
 ```
 MONGO_URI=mongodb://localhost:27017/todo
-PORT=4000
+PORT=3000
 ```
 
 🚀 Start the application
@@ -138,7 +138,7 @@ RUN npm install
 
 COPY . .
 
-EXPOSE 4000
+EXPOSE 3000
 
 CMD ["npm", "start"]
 ```

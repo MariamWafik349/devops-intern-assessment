@@ -236,13 +236,8 @@ git commit -m "Initial commit with Dockerfile"
 git branch -M main
 git push -u origin main
 ```
+![Screenshot 2025-07-26 160800](images/Screenshot%202025-07-26%20160800.png)
 ![Screenshot](images/Screenshot%202025-07-26%20162101.png)
-
-![Screenshot](images/Screenshot%202025-07-26%20221329.png)
-![Screenshot](images/Screenshot%202025-07-26%20221348.png)
-
-![Screenshot](images/Screenshot%202025-07-26%20180800.png)
-
 
 
 
@@ -307,9 +302,82 @@ git push origin main
 
 Check your GitHub Actions tab to see the build running.
 
-![Screenshot 2025-07-26 160800](images/Screenshot%202025-07-26%20160800.png)
+![Screenshot](images/Screenshot%202025-07-26%20221329.png)
+![Screenshot](images/Screenshot%202025-07-26%20221348.png)
+
+![Screenshot](images/Screenshot%202025-07-26%20180800.png)
+
+# Updated 'docker-build.yaml':
+Paste this in `docker-build.yml`:
+
+```
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set Docker Tag (date only)
+        run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: mariamwafik333/todo-app:${{ env.IMAGE_TAG }}
+
+  scan:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Set Docker Tag (date only)
+        run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      - name: Scan Docker Image with Trivy
+        uses: aquasecurity/trivy-action@0.19.0
+        with:
+          image-ref: mariamwafik333/todo-app:${{ env.IMAGE_TAG }}
+          format: table
+          exit-code: 0
+          ignore-unfixed:
+```
+
+✅ Test the Pipeline
+
+```
+git add .
+git commit -m "Add GitHub Actions workflow for Docker build"
+git push origin main
+```
+
+Check your GitHub Actions tab to see the build running.
+
+![App Screenshot](./images/Screenshot%202025-08-05%20115651.png)
+
+![App Screenshot](./images/Screenshot%202025-08-05%20115710.png)
 
 
+![App Screenshot](./images/Screenshot%202025-08-05%20115355.png)
 
 ---
 
